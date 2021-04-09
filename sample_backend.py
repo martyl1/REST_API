@@ -5,17 +5,26 @@ app = Flask(__name__)
 
 
 
-@app.route('/users', methods=['GET', 'POST'])
+@app.route('/users', methods=['GET', 'POST', 'DELETE'])
 def get_users():
    if request.method == 'GET':
       search_username = request.args.get('name')
-      if search_username :
+      search_job = request.args.get('job')
+      if search_username and search_job:
          subdict = {'users_list' : []}
          for user in users['users_list']:
-            if user['name'] == search_username:
+            if user['name'] == search_username and user['name'] == search_job:
                subdict['users_list'].append(user)
          return subdict
+      
       return users
+   
+   elif request.method == 'DELETE':
+      userToDelete = request.get_json()
+      users['users_list'].remove(userToDelete)
+      resp = jsonify(success=True)
+      return resp
+      
    elif request.method == 'POST':
       userToAdd = request.get_json()
       users['users_list'].append(userToAdd)
